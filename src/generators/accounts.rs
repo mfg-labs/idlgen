@@ -18,7 +18,7 @@ pub fn make_accounts(idl: &IDL) -> String {
                     },
             false => make_account_props(account)
         };
-        
+
         format!("    #[account]
     pub struct {} {{
 {}

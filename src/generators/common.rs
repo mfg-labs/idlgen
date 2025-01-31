@@ -16,7 +16,7 @@ pub fn make_defined_types(idl: &IDL) -> String {
 
 pub fn make_defined_types_enum(t: Types) -> String {
     format!("#[cfg_attr(not(target_os=\"solana\"), derive(Debug))]
-#[derive(Clone, AnchorSerialize, AnchorDeserialize, Copy, PartialEq, Eq)]
+#[derive(Clone, AnchorSerialize, AnchorDeserialize, Copy, PartialEq, Eq, serde::Serialize)]
 pub enum {} {{
 {}
 }}", t.name, t.kind.variants.clone().unwrap_or(vec![]).iter().map(|n| format!("    {}", n.name.to_case(Case::Pascal))).collect::<Vec<String>>().join(",\n"))
@@ -24,7 +24,7 @@ pub enum {} {{
 
 pub fn make_defined_types_struct(t: Types) -> String {
     format!("#[cfg_attr(not(target_os=\"solana\"), derive(Debug))]
-#[derive(Clone, AnchorSerialize, AnchorDeserialize)]
+#[derive(Clone, AnchorSerialize, AnchorDeserialize, serde::Serialize)]
 pub struct {} {{
 {}
 }}", t.name, make_defined_types_fields(t.clone()))
@@ -47,7 +47,7 @@ pub fn make_ixs(idl: &IDL) -> String {
 }}",
         idl.instructions.iter().map(|ix| {
         let ix_name_pascal =  ix.name.to_case(Case::Pascal);
-        format!("    #[derive(AnchorDiscriminator, AnchorSerialize, AnchorDeserialize)]
+        format!("    #[derive(AnchorDiscriminator, AnchorSerialize, AnchorDeserialize, serde::Serialize)]
     pub struct {} {{
 {}
     }}
@@ -66,8 +66,8 @@ pub fn make_ixs(idl: &IDL) -> String {
             self.serialize(&mut data).unwrap()
         }}
     }}
-    ", 
-    ix_name_pascal, 
+    ",
+    ix_name_pascal,
     ix.args.iter().map(|a| format!("        pub {}: {},", a.name.to_case(Case::Snake), a.kind.to_string())).collect::<Vec<String>>().join("\n"),
     ix_name_pascal
     )
@@ -117,7 +117,9 @@ events = []
 default = [\"rpc\", \"i11n\", \"cpi\", \"events\"]
 
 [dependencies]
-anchor-lang = \"0.30.0\"
+anchor-lang = \"0.30.0\"\
+serde = {{ version = \"1.0.210\", features = [\"derive\"] }}
+serde_json = \"1.0.128\"
 anchor-i11n = {{ optional = true, version = \"0.1.0\"}}", idl.get_name().to_case(Case::Kebab), idl.get_version(), idl.get_name().to_case(Case::Snake))
 }
 
@@ -155,6 +157,17 @@ pub mod events {{
     use super::*;
     use anchor_i11n::AnchorDiscriminator;
     use anchor_lang::Discriminator;
+    use anchor_lang::__private::base64;
+    use anchor_lang::__private::base64::Engine;
+
+    fn get_event_discriminator(event: &str) -> [u8; 8] {{
+        let preimage = format!(\"{{}}:{{}}\", \"event\", event);
+        let mut sighash = [0u8; 8];
+        sighash.copy_from_slice(
+            &anchor_lang::solana_program::hash::hash(preimage.as_bytes()).to_bytes()[..8],
+        );
+        sighash
+    }}
 
 {}
 }}

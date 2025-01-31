@@ -77,7 +77,7 @@ fn make(idl: &IDL, package: &Package) -> Result<()> {
     Ok(())
 }
 
-fn main() -> Result<()> { 
+fn main() -> Result<()> {
     let args = Args::parse();
     let file = File::open(&args.filename)?;
     let reader = BufReader::new(file);

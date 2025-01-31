@@ -195,7 +195,7 @@ impl Default for Type {
 pub struct Kind {
     pub(crate) kind: String,
     pub(crate) variants: Option<Vec<Name>>,
-    pub(crate) fields: Option<Vec<KindField>>,   
+    pub(crate) fields: Option<Vec<KindField>>,
 }
 
 impl Default for Kind {
@@ -233,9 +233,9 @@ pub struct PDA {
 pub struct Seed {
     pub(crate) kind: String,
     #[serde(rename = "type")]
-    pub(crate) of_type: VecEnum,
+    pub(crate) of_type: Option<VecEnum>,
     #[serde(default)]
-    pub(crate) value: String,
+    pub(crate) value: Vec<u8>,
     #[serde(default)]
     pub(crate) path: String,
 }
