@@ -1,6 +1,7 @@
 use std::fs::{create_dir_all, File};
 use std::io::{BufReader, Write};
 use anyhow::Result;
+use clap::builder::Str;
 use clap::Parser;
 use convert_case::{Case, Casing};
 use generators::common::{make_cargo_toml, make_lib_rs};
@@ -44,20 +45,23 @@ struct Args {
     /// Type of Package to generate (Crate or File)
     #[clap(short, long, default_value_t, value_enum)]
     package: Package,
+
+    #[arg(short, long)]
+    out: String,
 }
 
-fn make(idl: &IDL, package: &Package) -> Result<()> {
+fn make(idl: &IDL, package: &Package, out_dir: &String) -> Result<()> {
     match package {
         Package::File => {
             let mut file = File::create(format!("{}.rs", idl.get_name().to_case(Case::Snake)))?;
             file.write_all(make_lib_rs(idl).as_bytes())?;
         },
         Package::Crate => {
-            create_dir_all(format!("{}/src", idl.get_name().to_case(Case::Snake)))?;
-            let mut toml_file: File = File::create(format!("{}/Cargo.toml", idl.get_name().to_case(Case::Snake)))?;
+            create_dir_all(format!("{}/src", out_dir))?;
+            let mut toml_file: File = File::create(format!("{}/Cargo.toml", out_dir))?;
             toml_file.write_all(make_cargo_toml(idl).as_bytes())?;
 
-            let mut lib_file: File = File::create(format!("{}/src/lib.rs", idl.get_name().to_case(Case::Snake)))?;
+            let mut lib_file: File = File::create(format!("{}/src/lib.rs", out_dir))?;
             lib_file.write_all(make_lib_rs(idl).as_bytes())?;
         },
         Package::Zip => {
@@ -84,6 +88,6 @@ fn main() -> Result<()> {
 
     let idl: IDL = serde_json::from_reader(reader)?;
 
-    make(&idl, &args.package)?;
+    make(&idl, &args.package, &args.out)?;
     Ok(())
 }
