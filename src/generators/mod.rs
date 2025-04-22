@@ -4,3 +4,4 @@ pub mod cpi;
 pub mod i11n;
 pub mod rpc;
 pub mod events;
+pub mod readme;

@@ -9,6 +9,8 @@ use serde::Serialize;
 use types::IDL;
 use zip::write::FileOptions;
 use zip::ZipWriter;
+use crate::generators::readme::generate_readme;
+
 mod types;
 mod generators;
 
@@ -60,6 +62,9 @@ fn make(idl: &IDL, package: &Package, out_dir: &String) -> Result<()> {
             create_dir_all(format!("{}/src", out_dir))?;
             let mut toml_file: File = File::create(format!("{}/Cargo.toml", out_dir))?;
             toml_file.write_all(make_cargo_toml(idl).as_bytes())?;
+
+            let mut readme_file: File = File::create(format!("{}/README.md", out_dir))?;
+            readme_file.write_all(generate_readme(idl).as_bytes())?;
 
             let mut lib_file: File = File::create(format!("{}/src/lib.rs", out_dir))?;
             lib_file.write_all(make_lib_rs(idl).as_bytes())?;

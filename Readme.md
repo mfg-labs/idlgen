@@ -6,7 +6,7 @@ Generate CPI and Introspection SDK files or Rust Crates using nothing but an Anc
 
 Simply install the CLI from source with the following command:
 ```sh
-cargo install --git https://github.com/deanmlittle/idlgen
+cargo install --git https://github.com/mfg-labs/idlgen
 ```
 
 Then run it against an IDL file like so:
