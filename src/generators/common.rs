@@ -117,7 +117,7 @@ events = []
 default = [\"rpc\", \"i11n\", \"cpi\", \"events\"]
 
 [dependencies]
-anchor-lang = \"0.30.0\"\
+anchor-lang = \"0.30.0\"
 serde = {{ version = \"1.0.210\", features = [\"derive\"] }}
 serde_json = \"1.0.128\"
 anchor-i11n = {{ optional = true, version = \"0.1.0\"}}", idl.get_name().to_case(Case::Kebab), idl.get_version(), idl.get_name().to_case(Case::Snake))
