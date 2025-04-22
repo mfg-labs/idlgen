@@ -66,9 +66,5 @@ let instruction = solana_program::instruction::Instruction {{
     data,
 }};
 ```
-
-## 🔒 License
-
-MIT or Apache-2.0
 "#, name=name, kebab_name=kebab_name, snake_name=snake_name)
 }
